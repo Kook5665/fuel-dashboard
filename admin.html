@@ -149,7 +149,7 @@ $('plb').textContent=$('plb2').textContent=pl[0];$('plv').textContent=$('plv2').
 $('bal').textContent=n(bal,1);$('chip').textContent=st[3];$('chip').className='chip '+st[0];
 $('fill').style.height=Math.min(100,Math.max(0,bal/S.cap*100))+'%';$('fill').style.background=st[0]=='bad'?'var(--bad)':'#f5a51f';
 $('mark').style.bottom=Math.min(98,S.low/S.cap*100)+'%';$('sl').value=S.low;$('sc').value=S.cap;
-$('fc').innerHTML='บันทึกล่าสุด '+fd(ld)+(s.w?'<br>ที่อัตราใช้ '+n(s.w,1)+' ล./วัน คาดว่าหมดราว '+fd(fc.out)+(fc.late?'<br><b class="bad">เลยกำหนดแล้ว ตรวจยอดจริงและบันทึกการเติม</b>':''):'');
+$('fc').innerHTML='บันทึกล่าสุด '+fd(ld)+(s.w?'<br>ที่อัตราใช้ '+n(s.w,1)+' ล./วัน คาดว่าหมดราว '+fd(fc.out)+(fc.late?'<br><b class="bad">'+(VIEW?'ข้อมูลอาจเก่ากว่ายอดจริง แจ้งผู้ดูแลให้ตรวจยอดและอัปเดต':'เลยกำหนดแล้ว ตรวจยอดจริงและบันทึกการเติม')+'</b>':''):'');
 $('kpis').innerHTML=kdata(s).filter(k=>k.id!='bal').map(k=>`<div class="kc"><div class="kh">${ico(k.ic,k.col)}<span class="kl">${k.lb}</span></div><div class="kv"><b${k.sm?' class="sm"':''}>${k.v}</b>${k.u?`<small>${k.u}</small>`:''}</div>${k.x?`<div class="kx" style="color:${k.xc||'var(--mut)'}">${k.x}</div>`:''}</div>`).join('');
 // chart 1
 {const d=ch1(s),x0=50,x1=550,yt=24,yb=224,sl=(x1-x0)/d.mo.length,bw=sl*.64,Y=v=>yb-v/d.top*(yb-yt);let g='';
@@ -227,7 +227,7 @@ const LKS={U:[ST.urlU,ST.qrU,'ดูข้อมูลน้ำมันรถ�
 Object.keys(LKS).forEach(k=>{const[u,q,m]=LKS[k];$('u'+k).value=u||'';$('o'+k).href=u||'#';$('q'+k).innerHTML=q||'';$('l'+k).href='https://line.me/R/msg/text/?'+encodeURIComponent(m+(u||''))});
 $('nU').innerHTML=VIEW?'ส่งลิงก์นี้ทาง LINE เปิดบนมือถือได้เลย ไม่ต้องล็อกอิน ดูอย่างเดียว แก้ไขไม่ได้':'หน้านี้อยู่บน GitHub ส่งทาง LINE เปิดบนมือถือได้เลย ไม่ต้องล็อกอิน ดูอย่างเดียว แก้ไขไม่ได้ ข้อมูลอัปเดตเมื่อผู้ดูแลอัปโหลด data.json ใหม่: กดลูกศร ▾ ข้างปุ่ม Excel > ส่งออก data.json แล้ว'+(ST.upl?' <a href="'+ST.upl+'" target="_blank" rel="noopener">เปิดหน้าอัปโหลดบน GitHub</a>':' อัปโหลดทับบน GitHub');
 $('nA').textContent='ใช้สำหรับกรอกและแก้ไขข้อมูลเท่านั้น (อย่าส่งให้ผู้ใช้งาน) ผู้รับต้องได้รับสิทธิ์แก้ไขหน้านี้ในเมนูแชร์ของ claude.ai และล็อกอินบัญชีนั้นบนมือถือ';
-if(VIEW){$('xjw').hidden=true;$('lkA').hidden=true;$('lkb').textContent='🔗 ลิงก์สำหรับแชร์';$('syn').textContent=ST.synced?'ข้อมูลซิงก์เมื่อ '+fd(ST.synced):''}
+if(VIEW){$('png').hidden=true;$('xjw').hidden=true;$('lkA').hidden=true;$('lkb').textContent='🔗 ลิงก์สำหรับแชร์';$('syn').textContent=ST.synced?'ข้อมูลซิงก์เมื่อ '+fd(ST.synced):''}
 if(ST.file){$('lkb').hidden=true;$('lk').hidden=true;$('syn').textContent='ข้อมูล ณ วันที่ส่งไฟล์ '+fd(ST.synced)+' (เป็นสำเนา ไม่อัปเดตเอง)'}
 $('lkb').onclick=()=>{$('lk').hidden=!$('lk').hidden};
 if(!VIEW){const la=$('lkA');la.style.cssText='margin-top:12px;padding-top:12px;border-top:1px solid var(--line)';$('exp').appendChild(la)}
