@@ -89,7 +89,7 @@ th{text-align:left;color:var(--mut);font-weight:500;font-size:13px}th,td{padding
 <section class="kpis" id="kpis"></section>
 <section class="card" id="entry" hidden><h2>บันทึกรายการ (ผู้ดูแล)</h2>
  <div class="tabs"><button data-t="D">จ่ายให้รถ</button><button data-t="R">เติมถัง</button><button data-t="A">ปรับยอดตามจริง</button></div>
- <div class="form"><label>วันที่<input id="fd" type="date"></label>
+ <div class="form"><label id="ldoc">เลขที่เอกสาร<input id="fdoc" type="text" maxlength="30" autocomplete="off"></label><label>วันที่<input id="fd" type="date"></label>
   <label id="lv">รถหมายเลข<select id="fv"></select></label>
   <label id="lm">เลขไมล์<input id="fm" type="number" step="0.1"></label>
   <label id="le">รหัสพนักงาน<input id="fe" type="number"></label>
@@ -99,7 +99,7 @@ th{text-align:left;color:var(--mut);font-weight:500;font-size:13px}th,td{padding
  <button class="sec" id="undo" hidden>ลบรายการล่าสุดที่บันทึก</button><div style="margin-top:10px"><button class="sec" id="allb">แสดงรายการทั้งหมด</button></div>
 <div id="allp" hidden style="margin-top:12px"><div class="bar" style="margin-bottom:8px"><b>รายการทั้งหมด <span class="mut" id="alln" style="font-weight:400"></span></b><label class="mut">เดือน <select id="allm"></select></label></div>
 <div id="ed" hidden style="background:var(--inp);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px"><p id="et" style="font-weight:600;margin-bottom:8px"></p>
-<div class="form"><label>วันที่<input id="ed_d" type="date"></label><label id="edv">รถหมายเลข<select id="ed_v"></select></label><label id="edm">เลขไมล์<input id="ed_m" type="number" step="0.1"></label><label id="ede">รหัสพนักงาน<input id="ed_e" type="number"></label><label>จำนวน (ลิตร)<input id="ed_q" type="number" step="0.1"></label><button class="go" id="eds">บันทึกการแก้ไข</button><button class="sec" id="edc">ยกเลิก</button></div><p id="emsg" style="margin-top:8px;font-weight:600;min-height:22px"></p></div>
+<div class="form"><label id="edoc">เลขที่เอกสาร<input id="ed_doc" type="text" maxlength="30" autocomplete="off"></label><label>วันที่<input id="ed_d" type="date"></label><label id="edv">รถหมายเลข<select id="ed_v"></select></label><label id="edm">เลขไมล์<input id="ed_m" type="number" step="0.1"></label><label id="ede">รหัสพนักงาน<input id="ed_e" type="number"></label><label>จำนวน (ลิตร)<input id="ed_q" type="number" step="0.1"></label><button class="go" id="eds">บันทึกการแก้ไข</button><button class="sec" id="edc">ยกเลิก</button></div><p id="emsg" style="margin-top:8px;font-weight:600;min-height:22px"></p></div>
 <div class="tw" style="max-height:440px;overflow:auto"><table id="at"></table></div></div></section>
 <section class="cols"><div class="card"><h2><i data-i="bars" data-c="#12306b"></i>ปริมาณใช้รายเดือน แยกตามรถ (ลิตร)</h2><div class="lg" id="lg"></div><div class="cht" id="c1"></div></div>
  <div class="card"><h2><i data-i="line" data-c="#12306b"></i>ระดับน้ำมันในถัง</h2><div class="cht" id="c2"></div><p class="note"><b style="color:var(--bad)">●</b> จุดแดง = จ่ายแล้วเหลือต่ำกว่าจุดสั่งเติม · เลือกรายเดือนเพื่อดูแกนวันที่ แตะหรือชี้จุดเพื่อดูรายละเอียด</p></div></section>
@@ -123,7 +123,7 @@ try{const j=JSON.stringify(Object.assign({},ST,{rows:RW,cap:S.cap,low:S.low})).r
 await ar.publish(b.replace('@@'+'STATE@@',()=>j).replace('@@'+'SRCTAG@@',()=>'<script id="src" type="text/plain">'+SRC64()+'<'+'/script>'));return true}
 catch(e){const k=e&&e.code;if(k=='not_granted'||k=='not_writer')return bad('บันทึกไม่ได้: บัญชีนี้ไม่มีสิทธิ์แก้ไขหน้านี้ ให้เปิดด้วยบัญชีเจ้าของ (รายการที่ยังไม่บันทึกถูกยกเลิก)');if(k=='conflict')return bad('มีการบันทึกพร้อมกัน กำลังโหลดข้อมูลล่าสุด');if(k=='rate_limited')return bad('บันทึกถี่เกินไป รอสักครู่แล้วลองใหม่');return bad('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง')}},
 sum=a=>a.reduce((s,o)=>s+o.q,0);
-function led(){let b=D.open;return RW.map((r,i)=>({r,i})).sort((a,c)=>a.r[0].localeCompare(c.r[0])||a.i-c.i).map(({r,i})=>{const o=r[1]=='D'?{d:r[0],t:'D',v:r[2],m:r[3],q:r[4],e:r[5]}:{d:r[0],t:r[1],q:r[2]};b+=o.t=='D'?-o.q:o.q;o.b=b;o.i=i;return o})}
+function led(){let b=D.open;return RW.map((r,i)=>({r,i})).sort((a,c)=>a.r[0].localeCompare(c.r[0])||a.i-c.i).map(({r,i})=>{const o=r[1]=='D'?{d:r[0],t:'D',v:r[2],m:r[3],q:r[4],e:r[5],doc:r[6]||''}:{d:r[0],t:r[1],q:r[2]};b+=o.t=='D'?-o.q:o.q;o.b=b;o.i=i;return o})}
 const stat=b=>b<=S.low/2?['bad','วิกฤต','#d62828','วิกฤต ควรสั่งเติมทันที']:b<=S.low?['warn','ใกล้หมด','#b36d00','ใกล้หมด ควรสั่งเติม']:['ok','ปกติ','#23794f','ระดับปกติ'];
 const fcast=s=>{const out=new Date(+new Date(s.ld)+(s.w?s.bal/s.w:0)*864e5).toISOString().slice(0,10);return{out,late:out<new Date().toISOString().slice(0,10)}};
 const plab=s=>{if(P!='all'){const[y,m]=P.split('-').map(Number);return['ประจำเดือน',M[m]+' '+(y+543)%100]}const a=s.mo[0],b=s.mo[s.mo.length-1],yy=(+a.slice(0,4)+543)%100;return['ช่วงข้อมูล',a==b?M[+a.slice(5)]+' '+yy:M[+a.slice(5)]+' – '+M[+b.slice(5)]+' '+yy]};
@@ -142,14 +142,14 @@ return{a,b,span:b-a,ym,step,st,tk,mn}}
 function vdata(s){return V.map(v=>{let pm=null,f=0,mi=0,t=0,c=0,ld='';s.L.filter(o=>o.t=='D'&&o.v==v).forEach(o=>{if(P=='all'||o.d.startsWith(P)){t+=o.q;c++;ld=o.d;if(pm!=null&&o.m>pm){f+=o.q;mi+=o.m-pm}}pm=o.m});return{v,t,c,avg:c?t/c:0,eff:mi?f/mi:0,ld}})}
 const ico=(nm,col)=>`<span class="ci" style="background:${col}"><svg viewBox="0 0 24 24" fill="none">${ICON[nm].map(([d,m,w,e])=>m=='f'?`<path d="${d}" fill="#fff"${e?' fill-rule="evenodd"':''}/>`:`<path d="${d}" stroke="#fff" stroke-width="${w||2}" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}</svg></span>`;
 function render(){
-const s=sm(),L=s.L,HE=s.L.some(o=>o.e),bal=s.bal,ld=s.ld,ms=[...new Set(L.map(o=>o.d.slice(0,7)))],Lp=s.Lp;
+const s=sm(),L=s.L,HE=s.L.some(o=>o.e),HD=s.L.some(o=>o.doc),bal=s.bal,ld=s.ld,ms=[...new Set(L.map(o=>o.d.slice(0,7)))],Lp=s.Lp;
 $('pp').innerHTML='<option value="all">ทั้งหมด</option>'+ms.map(m=>`<option value="${m}">${M[+m.slice(5)]} ${(+m.slice(0,4)+543)%100}</option>`).join('');$('pp').value=P;
 const st=stat(bal),fc=fcast(s),pl=plab(s);
 $('plb').textContent=$('plb2').textContent=pl[0];$('plv').textContent=$('plv2').textContent=pl[1];$('plv').style.fontSize=pl[1].length>8?'2.3vw':'';$('asof').textContent=$('asof2').textContent='ข้อมูล ณ '+fd(ld);$('pct').textContent=Math.round(bal/S.cap*100)+'%';
 $('bal').textContent=n(bal,1);$('chip').textContent=st[3];$('chip').className='chip '+st[0];
 $('fill').style.height=Math.min(100,Math.max(0,bal/S.cap*100))+'%';$('fill').style.background=st[0]=='bad'?'var(--bad)':'#f5a51f';
 $('mark').style.bottom=Math.min(98,S.low/S.cap*100)+'%';$('sl').value=S.low;$('sc').value=S.cap;
-$('fc').innerHTML='บันทึกล่าสุด '+fd(ld)+(s.w?'<br>ที่อัตราใช้ '+n(s.w,1)+' ล./วัน คาดว่าหมดราว '+fd(fc.out)+(fc.late?'<br><b class="bad">'+(VIEW?'ข้อมูลอาจเก่ากว่ายอดจริง แจ้งผู้ดูแลให้ตรวจยอดและอัปเดต':'เลยกำหนดแล้ว ตรวจยอดจริงและบันทึกการเติม')+'</b>':''):'');
+$('fc').innerHTML='บันทึกล่าสุด '+fd(ld)+(s.w?'<br>ที่อัตราใช้ '+n(s.w,1)+' ล./วัน คาดว่าหมดราว '+fd(fc.out)+(fc.late?'<br><b class="bad">เลยกำหนดแล้ว ตรวจยอดจริงและบันทึกการเติม</b>':''):'');
 $('kpis').innerHTML=kdata(s).filter(k=>k.id!='bal').map(k=>`<div class="kc"><div class="kh">${ico(k.ic,k.col)}<span class="kl">${k.lb}</span></div><div class="kv"><b${k.sm?' class="sm"':''}>${k.v}</b>${k.u?`<small>${k.u}</small>`:''}</div>${k.x?`<div class="kx" style="color:${k.xc||'var(--mut)'}">${k.x}</div>`:''}</div>`).join('');
 // chart 1
 {const d=ch1(s),x0=50,x1=550,yt=24,yb=224,sl=(x1-x0)/d.mo.length,bw=sl*.64,Y=v=>yb-v/d.top*(yb-yt);let g='';
@@ -165,12 +165,12 @@ g+=`<path d="${p}" fill="none" stroke="#f5a51f" stroke-width="2.6" stroke-linejo
 $('c2').innerHTML=`<svg viewBox="0 0 560 240">${g}${d.mn?`<text x="548" y="238" text-anchor="end">วันที่ (${pl[1]})</text>`:''}</svg>`}
 $('vt').innerHTML='<tr><th>รถ</th><th>รวม (ลิตร)</th><th>ครั้ง</th><th>เฉลี่ย/ครั้ง</th><th>ลิตร/ไมล์</th><th>เติมล่าสุด</th></tr>'+vdata(s).map(r=>`<tr><td><span class="sw" style="background:${C[r.v]}"></span><span class="pl" style="color:${C[r.v]}">รถ ${r.v}</span></td><td>${n(r.t)}</td><td>${r.c}</td><td>${r.c?n(r.avg,1):'-'}</td><td>${r.eff?n(r.eff,2):'-'}</td><td>${r.ld?fd(r.ld):'-'}</td></tr>`).join('');
 const R=[...Lp].reverse().slice(0,all?999:12);
-$('lt').innerHTML='<tr><th>วันที่</th><th>รายการ</th><th>รถ</th><th class="r">ลิตร</th><th class="r">คงเหลือ</th><th class="r">ไมล์</th>'+(HE?'<th class="r">พนักงาน</th>':'')+'</tr>'+R.map(o=>`<tr><td>${fd(o.d)}</td><td><span class="tag tg-${o.t}">${T[o.t]}</span></td><td>${o.v||''}</td><td class="r ${o.t=='D'?'':'ok'}">${o.t=='D'?'-':o.q>0?'+':''}${n(o.q,1)}</td><td class="r ${o.b<=S.low?'warn':''}">${n(o.b,1)}</td><td class="r">${o.m?n(o.m,1):''}</td>${HE?`<td class="r">${o.e||''}</td>`:''}</tr>`).join('');
+$('lt').innerHTML='<tr>'+(HD?'<th>เลขที่เอกสาร</th>':'')+'<th>วันที่</th><th>รายการ</th><th>รถ</th><th class="r">ลิตร</th><th class="r">คงเหลือ</th><th class="r">ไมล์</th>'+(HE?'<th class="r">พนักงาน</th>':'')+'</tr>'+R.map(o=>`<tr>${HD?`<td>${o.doc||''}</td>`:''}<td>${fd(o.d)}</td><td><span class="tag tg-${o.t}">${T[o.t]}</span></td><td>${o.v||''}</td><td class="r ${o.t=='D'?'':'ok'}">${o.t=='D'?'-':o.q>0?'+':''}${n(o.q,1)}</td><td class="r ${o.b<=S.low?'warn':''}">${n(o.b,1)}</td><td class="r">${o.m?n(o.m,1):''}</td>${HE?`<td class="r">${o.e||''}</td>`:''}</tr>`).join('');
 $('more').textContent=all?'แสดงเฉพาะล่าสุด':'ดูทั้งหมด ('+Lp.length+' รายการ)';$('undo').hidden=!(canW&&RW.length);perm();hint();$('xp').textContent=P=='all'?'· ทั้งหมด':'· '+$('pp').selectedOptions[0].text;renderAll();
 }
 function perm(){$('entry').hidden=!canW;$('sl').disabled=$('sc').disabled=!canW;$('role').textContent=canW?(ST.gh?'โหมดผู้ดูแล · กรอกข้อมูลได้':NOEDIT?'โหมดผู้ดูแล · บัญชีนี้อาจบันทึกไม่ได้':'โหมดผู้ดูแล · กรอกข้อมูลได้'):VIEW?'โหมดผู้ใช้งาน · ดูอย่างเดียว':'โหมดดูอย่างเดียว';$('role').className='tag '+(canW?'ok':'')}
 function loadPages(){if(!ST.pages)return;const G=ST.ghr,rel=()=>fetch('data.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()),api=()=>fetch('https://api.github.com/repos/'+G.owner+'/'+G.repo+'/contents/data.json?ref='+G.branch+'&t='+Date.now(),{headers:{Accept:'application/vnd.github.raw+json'}}).then(r=>r.ok?r.json():Promise.reject());(G?api().catch(()=>fetch('https://raw.githubusercontent.com/'+G.owner+'/'+G.repo+'/'+G.branch+'/data.json?t='+Date.now()).then(r=>r.ok?r.json():Promise.reject())).catch(rel):rel()).then(j=>{if(!j||!Array.isArray(j.rows))return;RW=j.rows;ST.open=j.open??ST.open;S.cap=j.cap||400;S.low=j.low??100;if(j.updated){const d=new Date(j.updated);if(!isNaN(d)){ST.synced=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');$('syn').textContent='ข้อมูลอัปเดตเมื่อ '+fd(ST.synced)}}render()}).catch(()=>{})}
-const ghJson=()=>JSON.stringify({open:D.open,cap:S.cap,low:S.low,updated:new Date().toISOString(),rows:RW.map(r=>$('xhe').checked&&r[1]=='D'?[r[0],r[1],r[2],r[3],r[4],0]:r)});
+const ghJson=()=>JSON.stringify({open:D.open,cap:S.cap,low:S.low,updated:new Date().toISOString(),rows:RW.map(r=>$('xhe').checked&&r[1]=='D'?[r[0],r[1],r[2],r[3],r[4],0,r[6]||'']:r)});
 $('xj').onclick=()=>dlf('data.json',new Blob([ghJson()],{type:'application/json'}));
 $('xc').onclick=async()=>{const j=ghJson();$('xe').href=ST.edt||'https://github.com/Kook5665/fuel-dashboard/edit/main/data.json';$('xe').hidden=false;let ok=false;try{await navigator.clipboard.writeText(j);ok=true}catch(e){const q=$('xt');q.hidden=false;q.value=j;q.focus();q.select();try{ok=document.execCommand('copy')}catch(e2){}}
 xm(ok?'คัดลอกข้อมูลแล้ว กดลิงก์ "เปิดหน้าแก้ไข data.json บน GitHub" คลิกในช่องข้อความ เลือกทั้งหมด วางข้อมูลทับ แล้วกด Commit changes':'คัดลอกอัตโนมัติไม่ได้ กดค้างในช่องข้อความด้านล่างเพื่อคัดลอกเอง แล้วเปิดหน้าแก้ไข data.json บน GitHub','ok')};
@@ -186,14 +186,14 @@ const rowTxt=r=>r[1]=='D'?'จ่ายให้รถ '+r[2]+' '+r[4]+' ลิ�
 function diffDesc(){const a=SAVED.rows.map(x=>JSON.stringify(x)),b=RW.map(x=>JSON.stringify(x)),add=RW.filter((x,i)=>!a.includes(b[i])),rem=SAVED.rows.filter((x,i)=>!b.includes(a[i])),p=[];
 if(add.length&&rem.length)p.push('แก้ไข: '+rem.map(rowTxt).join('; ')+' → '+add.map(rowTxt).join('; '));else{if(add.length)p.push('เพิ่ม: '+add.map(rowTxt).join('; '));if(rem.length)p.push('ลบ: '+rem.map(rowTxt).join('; '))}
 if(S.cap!=SAVED.cap)p.push('ความจุถัง '+SAVED.cap+' → '+S.cap);if(S.low!=SAVED.low)p.push('จุดสั่งเติม '+SAVED.low+' → '+S.low);return p.join(' | ')||'บันทึก (ไม่มีการเปลี่ยนแปลง)'}
-function ledgerRows(){const sq={};return led().map(o=>{let doc='';if(o.t=='D'){const k=o.d.slice(0,7);sq[k]=(sq[k]||0)+1;doc='D'+String((+o.d.slice(0,4)+543)%100)+o.d.slice(5,7)+String(sq[k]).padStart(2,'0')}return[o.d,T[o.t],o.v||'',o.m||'',o.t=='D'?-o.q:o.q,Math.round(o.b*100)/100,o.e||'',doc]})}
+function ledgerRows(){const sq={};return led().map(o=>{let doc='';if(o.t=='D'){const k=o.d.slice(0,7);sq[k]=(sq[k]||0)+1;doc=o.doc||('D'+String((+o.d.slice(0,4)+543)%100)+o.d.slice(5,7)+String(sq[k]).padStart(2,'0'))}return[o.d,T[o.t],o.v||'',o.m||'',o.t=='D'?-o.q:o.q,Math.round(o.b*100)/100,o.e||'',doc]})}
 const shGet=()=>{try{return JSON.parse(localStorage.getItem('fuel_sh')||'{}')}catch(e){return{}}};
 async function sheetSync(desc){const c=shGet();if(!c.url||!c.key)return null;const body=JSON.stringify({key:c.key,action:desc,time:new Date().toISOString(),open:D.open,cap:S.cap,low:S.low,rows:ledgerRows()}),hd={'Content-Type':'text/plain;charset=utf-8'};
 try{const r=await fetch(c.url,{method:'POST',headers:hd,body});return await r.json()}catch(e){try{await fetch(c.url,{method:'POST',mode:'no-cors',headers:hd,body});return{ok:true,unverified:true}}catch(e2){return{ok:false,error:'เชื่อมต่อ Google ไม่ได้'}}}}
 async function ghSave(){const bad=m=>{RW=SAVED.rows.slice();S.cap=SAVED.cap;S.low=SAVED.low;render();msg(m,'bad');return false};
 if(!TOK){$('cfg').hidden=false;cfgStatus();return bad('ยังไม่ได้ตั้งรหัสเชื่อมต่อ GitHub ในเครื่องนี้ จึงบันทึกไม่ได้ วางรหัสในช่อง ⚙ ตั้งค่า แล้วลองใหม่ (รายการที่ยังไม่บันทึกถูกยกเลิก)')}
 const desc=diffDesc();
-try{const full={open:D.open,cap:S.cap,low:S.low,rows:RW},pub={open:D.open,cap:S.cap,low:S.low,updated:new Date().toISOString(),rows:RW.map(r=>r[1]=='D'?[r[0],r[1],r[2],r[3],r[4],0]:r)};
+try{const full={open:D.open,cap:S.cap,low:S.low,rows:RW},pub={open:D.open,cap:S.cap,low:S.low,updated:new Date().toISOString(),rows:RW.map(r=>r[1]=='D'?[r[0],r[1],r[2],r[3],r[4],0,r[6]||'']:r)};
 await ghPut('data-full.json',JSON.stringify(full),'update data (admin)');await ghPut('data.json',JSON.stringify(pub),'update data');SAVED={rows:RW.slice(),cap:S.cap,low:S.low}}
 catch(e){const c=e&&e.code;if(c==401||c==403)return bad('รหัสเชื่อมต่อ GitHub ใช้ไม่ได้หรือหมดอายุ กดปุ่ม ⚙ ตั้งค่า เพื่อใส่รหัสใหม่ (รายการที่ยังไม่บันทึกถูกยกเลิก)');if(c==404)return bad('ไม่พบ repository หรือรหัสไม่มีสิทธิ์เขียน ตรวจสิทธิ์ Contents = Read and write');return bad('บันทึกขึ้น GitHub ไม่สำเร็จ ลองใหม่อีกครั้ง')}
 const sr=await sheetSync(desc);if(sr&&!sr.ok)setTimeout(()=>msg('บันทึกขึ้น GitHub แล้ว แต่ส่งไป Google Sheets ไม่สำเร็จ: '+(sr.error||'ไม่ทราบสาเหตุ')+' (ดูที่ ⚙ ตั้งค่า > Google Sheets)','bad'),150);return true}
@@ -214,20 +214,20 @@ const shGo=async(d)=>{if(!RW.length)return shm('ยังไม่มีข้�
 $('sht').onclick=()=>shGo('ทดสอบการเชื่อมต่อ');$('shn').onclick=()=>shGo('ส่งข้อมูลทั้งหมดด้วยมือ');
 loadAdmin()}
 function hint(){const v=+$('fv').value,l=led().filter(o=>o.t=='D'&&o.v==v).pop();$('hint').textContent=tab=='D'&&l?`รถ ${v} เติมครั้งก่อน ${fd(l.d)} เลขไมล์ ${n(l.m,1)}`:tab=='A'?'ใส่ + ถ้าของจริงมากกว่าสมุด ใส่ − ถ้าน้อยกว่า':'';}
-function setTab(t){tab=t;document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t==t));['lv','lm','le'].forEach(i=>$(i).hidden=t!='D');$('fq').value=t=='R'?S.cap:'';hint()}
+function setTab(t){tab=t;document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t==t));['ldoc','lv','lm','le'].forEach(i=>$(i).hidden=t!='D');$('fq').value=t=='R'?S.cap:'';hint()}
 function msg(t,c){$('msg').textContent=t;$('msg').className=c}
 $('go').onclick=()=>{if(!canW)return;const d=$('fd').value,q=parseFloat($('fq').value),L=led(),bal=L[L.length-1].b;
 if(!d||isNaN(q)||q==0)return msg('กรอกวันที่และจำนวนลิตรให้ครบ','bad');
 if(tab=='D'){const v=+$('fv').value,m=parseFloat($('fm').value),pm=Math.max(0,...L.filter(o=>o.t=='D'&&o.v==v).map(o=>o.m));
 if(q<0)return msg('จำนวนลิตรต้องมากกว่า 0','bad');if(q>bal)return msg('ยอดคงเหลือไม่พอ เหลือ '+n(bal,1)+' ลิตร','bad');
-if(isNaN(m))return msg('กรอกเลขไมล์','bad');if(m<pm)return msg('เลขไมล์ต่ำกว่าครั้งก่อน ('+n(pm,1)+')','bad');RW.push([d,'D',v,m,q,+$('fe').value||0])}
+if(isNaN(m))return msg('กรอกเลขไมล์','bad');if(m<pm)return msg('เลขไมล์ต่ำกว่าครั้งก่อน ('+n(pm,1)+')','bad');RW.push([d,'D',v,m,q,+$('fe').value||0,$('fdoc').value.trim()])}
 else{if(tab=='R'&&q<0)return msg('จำนวนลิตรต้องมากกว่า 0','bad');RW.push([d,tab,q])}
-render();$('fq').value=tab=='R'?S.cap:'';$('fm').value='';sv().then(k=>k&&msg('บันทึกแล้ว','ok'))};
+render();$('fq').value=tab=='R'?S.cap:'';$('fm').value='';$('fdoc').value='';sv().then(k=>k&&msg('บันทึกแล้ว','ok'))};
 const LKS={U:[ST.urlU,ST.qrU,'ดูข้อมูลน้ำมันรถโฟล์คลิฟท์ '],A:[ST.urlA,ST.qrA,'ลิงก์ผู้ดูแลระบบน้ำมันรถโฟล์คลิฟท์ ']};
 Object.keys(LKS).forEach(k=>{const[u,q,m]=LKS[k];$('u'+k).value=u||'';$('o'+k).href=u||'#';$('q'+k).innerHTML=q||'';$('l'+k).href='https://line.me/R/msg/text/?'+encodeURIComponent(m+(u||''))});
 $('nU').innerHTML=VIEW?'ส่งลิงก์นี้ทาง LINE เปิดบนมือถือได้เลย ไม่ต้องล็อกอิน ดูอย่างเดียว แก้ไขไม่ได้':'หน้านี้อยู่บน GitHub ส่งทาง LINE เปิดบนมือถือได้เลย ไม่ต้องล็อกอิน ดูอย่างเดียว แก้ไขไม่ได้ ข้อมูลอัปเดตเมื่อผู้ดูแลอัปโหลด data.json ใหม่: กดลูกศร ▾ ข้างปุ่ม Excel > ส่งออก data.json แล้ว'+(ST.upl?' <a href="'+ST.upl+'" target="_blank" rel="noopener">เปิดหน้าอัปโหลดบน GitHub</a>':' อัปโหลดทับบน GitHub');
 $('nA').textContent='ใช้สำหรับกรอกและแก้ไขข้อมูลเท่านั้น (อย่าส่งให้ผู้ใช้งาน) ผู้รับต้องได้รับสิทธิ์แก้ไขหน้านี้ในเมนูแชร์ของ claude.ai และล็อกอินบัญชีนั้นบนมือถือ';
-if(VIEW){$('png').hidden=true;$('xjw').hidden=true;$('lkA').hidden=true;$('lkb').textContent='🔗 ลิงก์สำหรับแชร์';$('syn').textContent=ST.synced?'ข้อมูลซิงก์เมื่อ '+fd(ST.synced):''}
+if(VIEW){$('xjw').hidden=true;$('lkA').hidden=true;$('lkb').textContent='🔗 ลิงก์สำหรับแชร์';$('syn').textContent=ST.synced?'ข้อมูลซิงก์เมื่อ '+fd(ST.synced):''}
 if(ST.file){$('lkb').hidden=true;$('lk').hidden=true;$('syn').textContent='ข้อมูล ณ วันที่ส่งไฟล์ '+fd(ST.synced)+' (เป็นสำเนา ไม่อัปเดตเอง)'}
 $('lkb').onclick=()=>{$('lk').hidden=!$('lk').hidden};
 if(!VIEW){const la=$('lkA');la.style.cssText='margin-top:12px;padding-top:12px;border-top:1px solid var(--line)';$('exp').appendChild(la)}
@@ -238,8 +238,8 @@ let EI=-1,DQ=-1;const emsg=(t,c)=>{$('emsg').textContent=t;$('emsg').className=c
 function renderAll(){if($('allp').hidden)return;const L=led(),ms=[...new Set(L.map(o=>o.d.slice(0,7)))],sel=$('allm'),cur=sel.value||'all';
 sel.innerHTML='<option value="all">ทั้งหมด</option>'+ms.map(m=>`<option value="${m}">${M[+m.slice(5)]} ${(+m.slice(0,4)+543)%100}</option>`).join('');sel.value=cur=='all'||ms.includes(cur)?cur:'all';
 const f=sel.value,R=L.filter(o=>f=='all'||o.d.startsWith(f)).reverse();$('alln').textContent='('+R.length+' รายการ)';
-$('at').innerHTML='<tr><th>วันที่</th><th>รายการ</th><th>รถ</th><th class="r">ลิตร</th><th class="r">คงเหลือ</th><th class="r">ไมล์</th><th class="r">พนง.</th><th></th></tr>'+R.map(o=>`<tr><td>${fd(o.d)}</td><td><span class="tag tg-${o.t}">${T[o.t]}</span></td><td>${o.v||''}</td><td class="r">${o.t=='D'?'-':o.q>0?'+':''}${n(o.q,1)}</td><td class="r">${n(o.b,1)}</td><td class="r">${o.m?n(o.m,1):''}</td><td class="r">${o.e||''}</td><td style="text-align:right"><button class="sec" data-e="${o.i}" style="min-height:32px;padding:2px 10px">แก้ไข</button> <button class="sec" data-x="${o.i}" style="min-height:32px;padding:2px 10px${DQ==o.i?';color:var(--bad)':''}">${DQ==o.i?'ยืนยันลบ':'ลบ'}</button></td></tr>`).join('')}
-function openEd(i){const r=RW[i],d=r[1]=='D';EI=i;$('ed').hidden=false;$('et').textContent='แก้ไขรายการ: '+T[r[1]]+' วันที่ '+fd(r[0]);$('ed_d').value=r[0];$('ed_v').innerHTML=V.map(v=>`<option>${v}</option>`).join('');$('ed_v').value=d?r[2]:V[0];$('ed_m').value=d?r[3]:'';$('ed_q').value=d?r[4]:r[2];$('ed_e').value=d?(r[5]||''):'';['edv','edm','ede'].forEach(x=>$(x).hidden=!d);emsg('');$('ed').scrollIntoView({block:'nearest'})}
+$('at').innerHTML='<tr><th>เลขที่เอกสาร</th><th>วันที่</th><th>รายการ</th><th>รถ</th><th class="r">ลิตร</th><th class="r">คงเหลือ</th><th class="r">ไมล์</th><th class="r">พนง.</th><th></th></tr>'+R.map(o=>`<tr><td>${o.doc||''}</td><td>${fd(o.d)}</td><td><span class="tag tg-${o.t}">${T[o.t]}</span></td><td>${o.v||''}</td><td class="r">${o.t=='D'?'-':o.q>0?'+':''}${n(o.q,1)}</td><td class="r">${n(o.b,1)}</td><td class="r">${o.m?n(o.m,1):''}</td><td class="r">${o.e||''}</td><td style="text-align:right"><button class="sec" data-e="${o.i}" style="min-height:32px;padding:2px 10px">แก้ไข</button> <button class="sec" data-x="${o.i}" style="min-height:32px;padding:2px 10px${DQ==o.i?';color:var(--bad)':''}">${DQ==o.i?'ยืนยันลบ':'ลบ'}</button></td></tr>`).join('')}
+function openEd(i){const r=RW[i],d=r[1]=='D';EI=i;$('ed').hidden=false;$('et').textContent='แก้ไขรายการ: '+T[r[1]]+' วันที่ '+fd(r[0]);$('ed_d').value=r[0];$('ed_v').innerHTML=V.map(v=>`<option>${v}</option>`).join('');$('ed_v').value=d?r[2]:V[0];$('ed_m').value=d?r[3]:'';$('ed_q').value=d?r[4]:r[2];$('ed_e').value=d?(r[5]||''):'';$('ed_doc').value=d?(r[6]||''):'';['edoc','edv','edm','ede'].forEach(x=>$(x).hidden=!d);emsg('');$('ed').scrollIntoView({block:'nearest'})}
 const closeEd=()=>{EI=-1;$('ed').hidden=true};
 $('allb').onclick=()=>{$('allp').hidden=!$('allp').hidden;$('allb').textContent=$('allp').hidden?'แสดงรายการทั้งหมด':'ซ่อนรายการทั้งหมด';renderAll()};
 $('allm').onchange=renderAll;$('edc').onclick=closeEd;
@@ -248,7 +248,7 @@ if(DQ!=i){DQ=i;renderAll();setTimeout(()=>{if(DQ==i){DQ=-1;renderAll()}},4000);r
 DQ=-1;const old=RW.splice(i,1)[0];if(minBal()<0){RW.splice(i,0,old);renderAll();return emsg('ลบแล้วยอดคงเหลือติดลบ จึงลบไม่ได้','bad')}
 if(EI==i)closeEd();else if(EI>i)EI--;render();sv().then(k=>k&&emsg('ลบรายการแล้ว','ok'))};
 $('eds').onclick=()=>{if(!canW||EI<0)return;const r=RW[EI],d=$('ed_d').value,q=parseFloat($('ed_q').value);if(!d||isNaN(q)||q==0)return emsg('กรอกวันที่และจำนวนลิตรให้ครบ','bad');let nr;
-if(r[1]=='D'){const m=parseFloat($('ed_m').value);if(q<0)return emsg('จำนวนลิตรต้องมากกว่า 0','bad');if(isNaN(m))return emsg('กรอกเลขไมล์','bad');nr=[d,'D',+$('ed_v').value,m,q,+$('ed_e').value||0]}
+if(r[1]=='D'){const m=parseFloat($('ed_m').value);if(q<0)return emsg('จำนวนลิตรต้องมากกว่า 0','bad');if(isNaN(m))return emsg('กรอกเลขไมล์','bad');nr=[d,'D',+$('ed_v').value,m,q,+$('ed_e').value||0,$('ed_doc').value.trim()]}
 else{if(r[1]!='A'&&q<0)return emsg('จำนวนลิตรต้องมากกว่า 0','bad');nr=[d,r[1],q]}
 const old=r;RW[EI]=nr;if(minBal()<0){RW[EI]=old;return emsg('แก้แล้วยอดคงเหลือติดลบ จึงบันทึกไม่ได้','bad')}
 closeEd();render();sv().then(k=>k&&emsg('แก้ไขรายการแล้ว','ok'))};
@@ -331,7 +331,7 @@ const files=[['[Content_Types].xml',X+`<Types xmlns="http://schemas.openxmlforma
 sh.forEach((S,i)=>{const rows=Object.keys(S.R).map(Number).sort((a,b)=>a-b);files.push([`xl/worksheets/sheet${i+1}.xml`,X+`<worksheet ${NS}><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetFormatPr defaultRowHeight="24" customHeight="1"/>${S.W.length?`<cols>${S.W.map((w,k)=>`<col min="${k+1}" max="${k+1}" width="${w}" customWidth="1"/>`).join('')}</cols>`:''}<sheetData>${rows.map(r=>`<row r="${r}" ht="${S.H[r]||24}" customHeight="1">${Object.keys(S.R[r]).map(Number).sort((a,b)=>a-b).map(c=>cx(r,c,S.R[r][c])).join('')}</row>`).join('')}</sheetData>${S.mg.length?`<mergeCells count="${S.mg.length}">${S.mg.map(m=>`<mergeCell ref="${m}"/>`).join('')}</mergeCells>`:''}<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/></worksheet>`])});
 return zip(files)};return{sheet,build}}
 function mkMonth(wb,s,m,o){const[y,mm]=m.split('-').map(Number),by=y+543,ws=wb.sheet(M[mm]+' '+by%100),nd=new Date(Date.UTC(y,mm,0)).getUTCDate(),Q=s.L.filter(r=>r.d.startsWith(m)),f0=Q[0],ob=f0.b+(f0.t=='D'?f0.q:-f0.q),last=7+Q.length;
-ws.W=[14,12,11,11,9,9,10,11,11,3,12,13,15,3,11,9,9,9,9,9];
+ws.W=[17,12,11,11,9,9,10,11,11,3,12,13,15,3,11,9,9,9,9,9];
 const H=(r,c,v,z,al)=>ws.set(r,c,v,{z,b:1,bd:0,al}),U=(r,c,v)=>ws.set(r,c,v,{z:18,b:1,bd:2}),bx=(r1,c1,r2,c2,v,z,wr)=>ws.box(r1,c1,r2,c2,v,{z,b:1,wr});
 H(1,0,'รายงานน้ำมันเชื้อเพลิง',18,'left');H(1,2,'ประเภท :',18,'right');U(1,3,'ดีเซล');H(1,14,'จำนวนการเติมน้ำมันรถโฟล์คลิฟท์',18,'left');H(1,17,'เดือน :',18,'right');U(1,18,MN[mm]);U(1,19,by);
 H(2,0,'เดือน :',18,'right');U(2,1,MN[mm]);U(2,2,by);H(2,4,'แผ่นที่ :',18,'right');H(2,5,'1 / ในจำนวน 1 แผ่น',18,'left');H(3,18,'หน่วย :',16,'right');H(3,19,'ลิตร',16,'right');H(4,7,'หน่วย :',16,'right');H(4,8,'ลิตร',16,'right');
@@ -341,7 +341,7 @@ ws.set(4,14,'หมายเลขรถ',{b:1});ws.set(5,14,'วันที่
 ws.box(7,0,7,5,'คงเหลือยกมาจากงวดก่อน',{z:18,b:1,c:'FFFFFF',fl:'9966FF'});ws.set(7,6,ob,{z:18,b:1});ws.box(7,7,7,8,null,{fl:'9966FF'});
 let bal=ob,seq=0,Et=0,Ft=0;const dd=Q.map(()=>null);
 Q.forEach((o2,i)=>{const r=8+i,isD=o2.t=='D',sh={fl:'CCCCFF'};ws.set(r,1,sd(o2.d),{nf:14});
-if(isD){ws.set(r,0,'D'+String(by%100)+String(mm).padStart(2,'0')+String(++seq).padStart(2,'0'));ws.set(r,2,o2.v);ws.set(r,3,o2.m);ws.set(r,4,null,sh);ws.set(r,5,o2.q);ws.box(r,7,r,8,o2.e||null,{});bal-=o2.q;Ft+=o2.q}
+if(isD){{const au='D'+String(by%100)+String(mm).padStart(2,'0')+String(++seq).padStart(2,'0');ws.set(r,0,o2.doc||au)}ws.set(r,2,o2.v);ws.set(r,3,o2.m);ws.set(r,4,null,sh);ws.set(r,5,o2.q);ws.box(r,7,r,8,o2.e||null,{});bal-=o2.q;Ft+=o2.q}
 else{ws.set(r,0,null,sh);ws.set(r,2,null,sh);ws.set(r,3,null,sh);ws.set(r,4,o2.q);ws.set(r,5,null,sh);ws.box(r,7,r,8,NOTE[o2.t],{c:'FFFFFF',fl:'000000',wr:1});if(o2.t=='T')ws.H[r]=72;bal+=o2.q;Et+=o2.q}
 ws.set(r,6,{f:`G${r-1}+E${r}-F${r}`,v:Math.round(bal*100)/100},{})});
 const fc=n=>n>=3?'FFC6C6':n==2?'FFFFCC':'CCFFCC';let i=0;while(i<Q.length){const r=8+i;if(Q[i].t!='D'){[10,11,12].forEach(c=>ws.set(r,c,null,{fl:'000000'}));i++;continue}let j=i;for(let k=i+1;k<Q.length&&Q[k].d==Q[i].d;k++)if(Q[k].t=='D')j=k;const G=Q.slice(i,j+1).filter(x=>x.t=='D'),n=G.length,l=sum(G),k={fl:fc(n)};ws.box(r,10,8+j,10,sd(Q[i].d),{...k,nf:14});ws.box(r,11,8+j,11,n,k);ws.box(r,12,8+j,12,l,k);i=j+1}
